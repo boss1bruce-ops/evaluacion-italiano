@@ -6,6 +6,7 @@ let surveyData = {};
 let currentQuestionIndex = 0;
 let userAnswers = [];
 let startTime = null;
+let shuffledQuestions = [];
 
 // ============================================
 // NAVEGACIÓN ENTRE SECCIONES
@@ -54,14 +55,28 @@ function skipSurvey() {
 }
 
 // ============================================
+// FUNCIÓN AUXILIAR: MEZCLAR ARRAY
+// ============================================
+function shuffleArray(array) {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+}
+
+// ============================================
 // INICIALIZACIÓN DEL TEST
 // ============================================
 function initializeTest() {
+    // Mezclar preguntas aleatoriamente
+    shuffledQuestions = shuffleArray(allQuestions);
     currentQuestionIndex = 0;
     userAnswers = [];
 
     // Actualizar UI
-    document.getElementById('totalQuestions').textContent = allQuestions.length;
+    document.getElementById('totalQuestions').textContent = shuffledQuestions.length;
 
     // Renderizar primera pregunta
     renderQuestion();
@@ -72,7 +87,7 @@ function initializeTest() {
 // RENDERIZADO DE PREGUNTAS
 // ============================================
 function renderQuestion() {
-    const question = allQuestions[currentQuestionIndex];
+    const question = shuffledQuestions[currentQuestionIndex];
     const container = document.getElementById('questionContainer');
 
     // Determinar sección actual
@@ -128,7 +143,7 @@ function selectOption(index) {
 // NAVEGACIÓN ENTRE PREGUNTAS
 // ============================================
 function nextQuestion() {
-    if (currentQuestionIndex < allQuestions.length - 1) {
+    if (currentQuestionIndex < shuffledQuestions.length - 1) {
         currentQuestionIndex++;
         renderQuestion();
         updateProgress();
@@ -151,7 +166,7 @@ function previousQuestion() {
 function updateNavigationButtons() {
     document.getElementById('prevBtn').disabled = currentQuestionIndex === 0;
 
-    if (currentQuestionIndex === allQuestions.length - 1) {
+    if (currentQuestionIndex === shuffledQuestions.length - 1) {
         document.getElementById('nextBtn').textContent = 'Ver Resultados →';
     } else {
         document.getElementById('nextBtn').textContent = 'Siguiente →';
@@ -164,7 +179,7 @@ function updateNavigationButtons() {
 }
 
 function updateProgress() {
-    const progress = ((currentQuestionIndex + 1) / allQuestions.length) * 100;
+    const progress = ((currentQuestionIndex + 1) / shuffledQuestions.length) * 100;
     document.getElementById('testProgress').style.width = progress + '%';
     document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
 }
@@ -205,7 +220,7 @@ function calculateScores() {
     let comprehensionCorrect = 0;
     let falseFriendsCorrect = 0;
 
-    allQuestions.forEach((question, index) => {
+    shuffledQuestions.forEach((question, index) => {
         const userAnswer = userAnswers[index];
         const isCorrect = userAnswer === question.correct;
 
@@ -308,6 +323,9 @@ function displayResults(scores, cefrLevel, roadmap) {
 
     // Mostrar hoja de ruta
     displayRoadmap(roadmap, cefrLevel);
+
+    // Mostrar revisión de errores
+    displayErrorReview();
 }
 
 function createRadarChart(scores) {
@@ -428,6 +446,45 @@ function capitalizeFirst(str) {
 }
 
 // ============================================
+// REVISIÓN DE ERRORES
+// ============================================
+function displayErrorReview() {
+    const container = document.getElementById('errorReviewContent');
+    if (!container) return;
+
+    let errorCount = 0;
+    let html = '';
+
+    shuffledQuestions.forEach((question, index) => {
+        const userAnswer = userAnswers[index];
+        const correctAnswer = question.correct;
+
+        if (userAnswer !== correctAnswer) {
+            errorCount++;
+            const userSelectedText = question.options[userAnswer] || 'No respondida';
+            const correctText = question.options[correctAnswer];
+
+            html += `
+                <div class="error-item">
+                    <p class="error-question"><strong>Pregunta ${index + 1}:</strong> ${question.question}</p>
+                    <p class="error-user-answer">❌ Tu respuesta: ${userSelectedText}</p>
+                    <p class="error-correct-answer">✅ Respuesta correcta: ${correctText}</p>
+                    <p class="error-explanation">💡 ${question.explanation}</p>
+                </div>
+            `;
+        }
+    });
+
+    if (errorCount === 0) {
+        html = '<p class="perfect-score">🎉 ¡Perfecto! Respondiste todas las preguntas correctamente.</p>';
+    } else {
+        html = `<p class="error-count">Respondiste ${errorCount} pregunta(s) incorrectamente:</p>` + html;
+    }
+
+    container.innerHTML = html;
+}
+
+// ============================================
 // INTEGRACIÓN CON GOOGLE SHEETS
 // ============================================
 function sendToGoogleSheets(data) {
@@ -458,8 +515,110 @@ function saveToLocalStorage(data) {
 // FUNCIONES AUXILIARES
 // ============================================
 function downloadPDF() {
-    alert('Funcionalidad de descarga PDF en desarrollo. Por ahora puedes tomar un screenshot de tus resultados.');
-    window.print();
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    // Configuración
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const marginLeft = 20;
+    let yPos = 20;
+
+    // Título
+    doc.setFontSize(22);
+    doc.setTextColor(15, 76, 92);
+    doc.text('Resultados - Evaluación de Italiano', pageWidth / 2, yPos, { align: 'center' });
+
+    yPos += 15;
+
+    // Información del usuario
+    doc.setFontSize(12);
+    doc.setTextColor(0, 0, 0);
+    if (surveyData.name && surveyData.name !== 'Anónimo') {
+        doc.text(`Nombre: ${surveyData.name}`, marginLeft, yPos);
+        yPos += 8;
+    }
+
+    doc.text(`Fecha: ${new Date().toLocaleDateString('es-ES')}`, marginLeft, yPos);
+    yPos += 15;
+
+    // Nivel CEFR
+    doc.setFontSize(16);
+    doc.setTextColor(15, 76, 92);
+    const cefrLevel = document.querySelector('.level-badge').textContent;
+    const cefrDesc = document.querySelector('.level-description').textContent;
+    doc.text(`Nivel: ${cefrLevel} - ${cefrDesc}`, marginLeft, yPos);
+
+    yPos += 15;
+
+    // Competencias
+    doc.setFontSize(14);
+    doc.text('Análisis por Competencias:', marginLeft, yPos);
+    yPos += 10;
+
+    doc.setFontSize(11);
+    doc.setTextColor(0, 0, 0);
+
+    const competencies = document.querySelectorAll('.competency-item');
+    competencies.forEach(comp => {
+        const name = comp.querySelector('.competency-name').textContent;
+        const score = comp.querySelector('.competency-score').textContent;
+        doc.text(`• ${name}: ${score}`, marginLeft + 5, yPos);
+        yPos += 7;
+    });
+
+    yPos += 10;
+
+    // Hoja de Ruta
+    if (yPos > 240) {
+        doc.addPage();
+        yPos = 20;
+    }
+
+    doc.setFontSize(14);
+    doc.setTextColor(15, 76, 92);
+    doc.text('Hoja deRuta Personalizada:', marginLeft, yPos);
+    yPos += 10;
+
+    doc.setFontSize(11);
+    doc.setTextColor(0, 0, 0);
+
+    const roadmapSections = document.querySelectorAll('.roadmap-section');
+    roadmapSections.forEach(section => {
+        const title = section.querySelector('h4').textContent;
+        doc.setFont(undefined, 'bold');
+        doc.text(title, marginLeft, yPos);
+        yPos += 7;
+        doc.setFont(undefined, 'normal');
+
+        const items = section.querySelectorAll('li');
+        items.forEach(item => {
+            const text = item.textContent;
+            const lines = doc.splitTextToSize(text, pageWidth - marginLeft * 2);
+            lines.forEach(line => {
+                if (yPos > 280) {
+                    doc.addPage();
+                    yPos = 20;
+                }
+                doc.text(`  - ${line}`, marginLeft + 5, yPos);
+                yPos += 6;
+            });
+        });
+        yPos += 5;
+    });
+
+    // Pie de página
+    const totalPages = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= totalPages; i++) {
+        doc.setPage(i);
+        doc.setFontSize(9);
+        doc.setTextColor(150, 150, 150);
+        doc.text(`Andiamo - Evaluación Científica de Italiano | Página ${i} de ${totalPages}`,
+            pageWidth / 2, doc.internal.pageSize.getHeight() - 10, { align: 'center' });
+    }
+
+    // Descargar
+    const fileName = `Resultados_Italiano_${cefrLevel}_${new Date().toISOString().split('T')[0]}.pdf`;
+    doc.save(fileName);
 }
 
 function restartTest() {
