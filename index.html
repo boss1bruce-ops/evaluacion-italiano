@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,14 +8,17 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
+
 <body>
     <!-- Landing Page -->
     <section id="landing" class="section active">
         <div class="container">
             <div class="hero">
+                <img src="logo.svg" alt="Andiamo - Italiano che ti porta" class="logo">
                 <h1 class="title-main">Evaluación Científica de Italiano</h1>
                 <p class="subtitle">Descubre tu nivel CEFR real basado en investigación académica</p>
                 <div class="features">
@@ -46,9 +50,12 @@
             <div class="progress-bar">
                 <div class="progress-fill" style="width: 10%"></div>
             </div>
-            <h2 class="section-title">Información Demográfica</h2>
-            <p class="section-subtitle">Ayúdanos a conocerte mejor (opcional pero muy útil para mejorar el test)</p>
-            
+            <h2 class="section-title">Información Demográfica (Opcional)</h2>
+            <p class="section-subtitle">Ayúdanos a conocerte mejor. Esta información nos permite mejorar el test y
+                personalizar nuestros cursos.</p>
+            <p class="skip-info">⚠️ Si prefieres, puedes <strong>saltar esta encuesta</strong> e ir directo al test
+                haciendo clic en el botón de abajo.</p>
+
             <form id="surveyForm" class="survey-form">
                 <div class="form-group">
                     <label for="name">Nombre completo *</label>
@@ -145,7 +152,9 @@
                     </select>
                 </div>
 
-                <button type="submit" class="btn-primary">Iniciar Evaluación →</button>
+                <button type="submit" class="btn-primary">Completar y Continuar →</button>
+                <button type="button" class="btn-secondary" onclick="skipSurvey()"
+                    style="margin-top: 15px; width: 100%;">Saltar Encuesta e Iniciar Test →</button>
             </form>
         </div>
     </section>
@@ -157,7 +166,8 @@
                 <div class="progress-bar">
                     <div class="progress-fill" id="testProgress"></div>
                 </div>
-                <p class="progress-text">Pregunta <span id="currentQuestion">1</span> de <span id="totalQuestions">50</span></p>
+                <p class="progress-text">Pregunta <span id="currentQuestion">1</span> de <span
+                        id="totalQuestions">50</span></p>
                 <p class="section-label" id="sectionLabel">Vocabulario</p>
             </div>
 
@@ -214,4 +224,5 @@
     <script src="questions.js"></script>
     <script src="app.js"></script>
 </body>
-                                                          </html>
+
+</html>
