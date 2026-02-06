@@ -55,7 +55,7 @@ body {
    TYPOGRAPHY
    ============================================ */
 .brand-name {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     font-size: clamp(3rem, 6vw, 5rem);
     font-weight: 700;
     color: var(--teal);
