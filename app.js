@@ -489,7 +489,7 @@ function displayErrorReview() {
 // ============================================
 function sendToGoogleSheets(data) {
     // URL del Google Apps Script Web App
-    const GOOGLE_SCRIPT_URL = 'TU_SCRIPT_URL_AQUI'; // Lo configuraremos después
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRjdZV9MT2DQc6E90DTWqGQhLscMwkBmLtxmP2-GfStzIRkw7r-3_zRdJqQKFr5JW2/exec';
 
     fetch(GOOGLE_SCRIPT_URL, {
         method: 'POST',
