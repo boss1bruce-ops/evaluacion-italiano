@@ -152,11 +152,10 @@ body {
 }
 
 .logo {
-    width: 200px;
+    width: 250px;
     height: auto;
     margin: 0 auto 30px;
     display: block;
-    filter: drop-shadow(0 4px 12px rgba(15, 76, 92, 0.1));
 }
 
 .features {
