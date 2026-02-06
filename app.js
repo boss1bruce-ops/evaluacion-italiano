@@ -489,7 +489,7 @@ function displayErrorReview() {
 // ============================================
 function sendToGoogleSheets(data) {
     // URL del Google Apps Script Web App
-    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRjdZV9MT2DQc6E90DTWqGQhLscMwkBmLtxmP2-GfStzIRkw7r-3_zRdJqQKFr5JW2/exec';
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzxMeEcwNxgfC-HoNP1Sx2sFFIs2bFF6Qjz-fJIvTuSpJUuvkSjCO57qEiGm32rA5cn/exec';
 
     fetch(GOOGLE_SCRIPT_URL, {
         method: 'POST',
