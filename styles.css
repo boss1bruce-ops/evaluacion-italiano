@@ -55,13 +55,14 @@ body {
    TYPOGRAPHY
    ============================================ */
 .brand-name {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Orbitron', sans-serif;
     font-size: clamp(3rem, 6vw, 5rem);
-    font-weight: 700;
+    font-weight: 900;
     color: var(--teal);
     margin-bottom: 10px;
     text-align: center;
-    letter-spacing: 2px;
+    letter-spacing: 3px;
+    text-transform: lowercase;
 }
 
 .title-main {
@@ -420,6 +421,39 @@ body {
     font-weight: 600;
     color: var(--teal);
     margin-bottom: 25px;
+}
+
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+.result-card {
+    background: white;
+    padding: 30px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+}
+
+.result-card h3 {
+    color: var(--teal);
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Fix para el canvas del gráfico de radar */
+.result-card canvas {
+    max-width: 100% !important;
+    height: auto !important;
+    display: block;
+    margin: 0 auto;
+}
+
+#radarChart {
+    max-height: 400px;
+    width: 100% !important;
 }
 
 .competency-list {
